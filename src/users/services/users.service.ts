@@ -28,16 +28,12 @@ export class UsersService {
     return this.usersRepository.clear();
   }
 
-  async addOne(user: User): Promise<User> {
-    return this.usersRepository.save([user]).then(users => users[0]);
-  }
-
   async delete(user: User) {
-    return (await this.usersRepository.remove([user]))[0];
+    return this.usersRepository.remove(user);
   }
 
   async save(user: User) {
-    return (await this.usersRepository.save([user]))[0];
+    return this.usersRepository.save(user);
   }
 
   async isEmailExisting(email: string): Promise<boolean> {

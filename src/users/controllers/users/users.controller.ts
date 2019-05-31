@@ -8,11 +8,13 @@ import {
   Delete,
   Put,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from '../../services/users.service';
 import { CreateUserDto } from '../../models/create-user.dto';
 import { UpdateUserDto } from '../../models/update-user.dto';
 import { User } from '../../user.entity';
+import { CheckEmailQuery } from '../../check-email-query';
 
 @Controller('users')
 export class UsersController {
@@ -28,12 +30,21 @@ export class UsersController {
     return this.usersService.deleteAll();
   }
 
+  @Get('check-email')
+  async checkEmailAvailable(@Query() checkEmailQuery: CheckEmailQuery) {
+    return this.usersService
+      .isEmailExisting(checkEmailQuery.email)
+      .then(exists => {
+        return { email: checkEmailQuery.email, available: !exists };
+      });
+  }
+
   @Post()
   async craete(@Body() createUserDto: CreateUserDto) {
     console.log('createUserDto:', createUserDto);
     const user = new User();
     Object.assign(user, createUserDto);
-    return this.usersService.addOne(user);
+    return this.usersService.save(user);
   }
 
   @Get(':id')
